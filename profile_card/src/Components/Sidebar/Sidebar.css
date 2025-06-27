@@ -1,0 +1,137 @@
+.sidebar{
+    width: 250px;
+    height: 100vh;
+    background-color: rgba(49, 49, 207, 0.7);
+    color: rgb(203, 212, 159);
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: 0.5s;
+    /* display: block !important; */
+    z-index: 1000;
+}
+
+.sidebar.closed{
+    width: 80px;
+}
+
+
+.sidebar-header{
+    display: flex;
+    align-items: center;
+    background-color: rgba(33, 33, 65, 0.7);
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.toggle-btn{
+    cursor: pointer;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    /* padding: 5px; */
+    color: aliceblue;
+}
+
+.logo{
+    text-align: center;
+}
+
+.logo h2{
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 25px;
+    color: yellowgreen;
+    margin: 0;
+}
+
+.nav-menu{
+    list-style-type: none;
+    padding: 0;
+}
+
+.nav-menu ul{
+    list-style-type: none;
+    padding: 0;
+}
+
+.nav-menu ul li{
+    padding: 15px 20px;
+}
+
+.nav-menu ul li a{
+    color: white;
+    text-decoration: none;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.nav-menu ul li a:hover{
+    background-color: blueviolet;
+    transform: scale(1.1);
+}
+
+
+/* Submenu styles */
+.submenu {
+    padding-left: 20px; /* Creates an indent for the submenu */
+    list-style: none;
+    margin: 5px 0;
+}
+
+.submenu li {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.submenu li a {
+    font-size: 14px;
+    color: #ccc;
+    text-decoration: none;
+    display: flex; /* Ensures icon and text are aligned */
+    align-items: center;
+    gap: 10px; /* Adds space between icon and text */
+    /* padding-left: 0px; Further indents submenu items */
+}
+
+.submenu li a:hover {
+    color: #fff;
+    /* text-decoration: underline; */
+}
+
+
+
+.cart-button {
+    position: absolute;
+    bottom: 20px; /* Adjust as per requirement */
+    left: 10px; /* Adjust for padding */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.cart-button a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 10px 20px;
+    background-color: rgba(33, 33, 65, 0.8);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.cart-button a:hover {
+    background-color: blueviolet;
+    transform: scale(1.1);
+}
+
+.cart-button svg {
+    font-size: 24px;
+}

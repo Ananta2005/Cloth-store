@@ -1,0 +1,11 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.spline-container {
+    width: 100%; /* Set to the desired width */
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Hide scroll */
+    position: relative; 
+}

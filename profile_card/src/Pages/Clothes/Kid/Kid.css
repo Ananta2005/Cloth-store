@@ -1,0 +1,165 @@
+/* Scoped variables within the .myComponent class */
+.myComponent {
+    --color-grey-primary: #f0f0f0;
+    --color-yellow-primary: goldenrod;
+    --color-orange-primary: darkorange;
+    --color-green-primary: mediumseagreen;
+
+    font-size: 62.5%; /* Base font size for rem calculation */
+    font-family: Arial, Helvetica, sans-serif; /* Sets a specific font */
+    margin-left: 12rem;
+}
+
+
+.myComponent .heading{
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 2.5rem;
+}
+
+.myComponent .productList {
+    display: flex; /* Ensures the items align horizontally */
+    flex-wrap: wrap; /* Allows wrapping of the cards */
+    gap: 2rem; /* Space between cards */
+    background-color: var(--color-grey-primary);
+    padding: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.myComponent .productCard {
+    position: relative;
+    background-color: white;
+    padding: 1rem;
+    /* width: 100%; */
+    max-width: 40rem;
+    height: 30rem;
+    transition: 0.2s;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    font-size: 1.6rem;
+}
+
+.myComponent .productCard:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0.5rem 0.75rem 1.5rem #bbbbbb;
+}
+
+.myComponent .productImage {
+    max-width: 100%;
+    height: 250px;
+    object-fit: cover; 
+    border-radius: 8px;
+}
+
+/* .myComponent .productCard_card {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: 0.2s;
+} */
+
+
+.myComponent .productCard_cart {
+    position: absolute;
+    bottom: 16px; /* Adjust distance from the bottom */
+    right: 156px; /* Adjust distance from the right */
+    font-size: 24px;
+    color: #007bff;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.3s;
+}
+
+
+.myComponent .productCard_cart:hover {
+    transform: scale(1.2);
+    color: #0056b3;
+}
+
+
+.myComponent .productCard_wishlist {
+    position: absolute;
+    right: 1.5rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.myComponent .productCard_fastSelling {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    color: var(--color-orange-primary);
+}
+
+.myComponent .productCard_content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* height: 100%; */
+}
+
+.myComponent .productName {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.myComponent .displayStack__1,
+.myComponent .displayStack__2 {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.myComponent .productPrice {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-green-primary);
+}
+
+.myComponent .productSales,
+.myComponent .productTime {
+    font-size: 1.2rem;
+}
+
+.myComponent .productRating {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.myComponent .productRating .fa-star {
+    color: var(--color-yellow-primary); /* Golden star color */
+}
+
+.myComponent .productTime {
+    font-size: 1rem;
+    color: #888;
+}
+
+
+.myComponent .swiper-container {
+    width: 1000px;
+    height: 100px;
+    margin-bottom: 2rem;
+}
+
+.myComponent .swiper-slide img {
+    width: 1000px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+}
