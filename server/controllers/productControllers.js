@@ -51,7 +51,7 @@ export const deleteProduct = async(req,res) => {
         const deleted = await Product.destroy({ where: {id} })
         if(deleted)
         {
-            res.json({message: 'Product deleted Successfully' })
+            res.json({message: 'Product deleted Successfully !' })
         }
         else
         {
