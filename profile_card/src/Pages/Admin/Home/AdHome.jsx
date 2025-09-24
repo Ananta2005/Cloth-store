@@ -22,7 +22,7 @@ const AdHome = () =>{
 
             <div className="ad-section" style={{ backgroundImage: `url(${admin2})` }}>
                 <h1>Block or Ban users.</h1>
-                <button>Block</button>
+                <button onClick={() => navigate('/admin/block')}>Block</button>
             </div>
         </div>
     )

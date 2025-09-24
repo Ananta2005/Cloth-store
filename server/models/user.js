@@ -17,6 +17,8 @@ const User = sequelize.define("User", {
     twoFactorSecret: { type: DataTypes.STRING },
     isVerified: { type: BOOLEAN, defaultValue: false,},
     verificationCode: { type: DataTypes.STRING },
+    resetToken: { type: DataTypes.STRING, allowNull: true},
+    resetTokenExpiry: {type: DataTypes.BIGINT, allowNull: true},
 })
 
 sequelize.sync({ alter: true })

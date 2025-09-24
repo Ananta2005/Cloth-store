@@ -1,0 +1,36 @@
+.modify-container {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    max-width: 800px;
+    margin: auto;
+}
+
+.add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2rem;
+}
+
+.add-form input {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.add-form button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.product-item {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}

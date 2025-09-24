@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { login, updateProfilePhoto, loginUser, registerUser } from '../../Slice/userSlice'
+import { login, updateProfilePhoto, loginUser, registerUser, fetchUserDetails } from '../../Slice/userSlice'
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,15 +24,18 @@ const Toggle_form = ({ isModal =false, onClose }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    // useEffect(()=>{
+    //     dispatch(fetchUserDetails())
+    // }, [dispatch])
 
 
     const handleLogin = async () =>{
-        if(!username || !password)
+        if(!email || !password)
             {
               toast.error('Please fill all fields')
               return
             }
-            console.log("User data before sending request: ", {username, password})
+            console.log("User data before sending request: ", {email, password})
         // localStorage.setItem('token', 'user_token')
         // dispatch(login({ username, email }))
         // console.log("Login successfully")
@@ -44,7 +47,7 @@ const Toggle_form = ({ isModal =false, onClose }) => {
 
         try
         {
-            const resultAction = await dispatch(loginUser({ username, password }))
+            const resultAction = await dispatch(loginUser({ email, password }))
             console.log("Login response: ", resultAction)
 
             const payload = resultAction.payload
@@ -57,21 +60,19 @@ const Toggle_form = ({ isModal =false, onClose }) => {
                 {
                     navigate('/verify-mfa')
                 }
-                else if(isModal && onClose)
-                {
-                    onClose();
-                }
                 else
                 {
-                    navigate('/setup-mfa')
+                    setTimeout(() => {
+                       navigate('/setup-mfa')
+                    }, 100)
                 }
             }
             else
             {
                 toast.error(resultAction.payload || "Login failed")
-                if(resultAction.payload === "Email not verified. Please verify your email first.")
+                if(resultAction.payload === "Wrong Credentials.")
                 {
-                    navigate("/Verify-Email")
+                    toast.error('Wrong Credentials!')
                 }
             }
         }
@@ -100,11 +101,7 @@ const Toggle_form = ({ isModal =false, onClose }) => {
             {
                 console.log("signup success")
                 toast.success("Signup successful. Please check your email for verification.")
-                // setTimeout(()=>{
-                //     navigate("/Verify-Email")
-                // }, 1000)
                 navigate("/Verify-Email")
-                // <Email/>
             }
             else
             {
@@ -132,13 +129,16 @@ const Toggle_form = ({ isModal =false, onClose }) => {
             </div>
 
             {isLogin ? (
-                <div className='form'>
-                    <h2> Login Form</h2>
-                    {/* <input type='text' placeholder= 'ID' /> */}
-                    <input type='text' placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} />
-                    <input type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
-                    <button onClick={handleLogin}>Login</button>
-                    <p>Not a member? <a href='#' onClick={() => setIsLogin(false)}>Signup now</a></p>
+                <div>
+                    <div className='form'>
+                        <h2> Login Form</h2>
+                        {/* <input type='text' placeholder= 'ID' /> */}
+                        <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <input type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
+                        <button onClick={handleLogin}>Login</button>
+                        <p>Not a member? <span className="link" onClick={() => setIsLogin(false)}>Signup now</span></p>
+                    </div>
+                    <div className='w-[140px] h-8 rounded-md border-4 border-blue-500 hover:bg-blue-500 hover:text-white transition-colors cursor-pointer ml-auto' onClick={() => navigate('/forget-password')}>Forget Password?</div>
                 </div>
             ) : (
                 

@@ -107,4 +107,60 @@
   
   .form p {
     text-align: center;
+  } 
+
+
+
+
+  /* The above CSS is for Toogle form */
+  /* the below CSS is for auth0 */
+  /* Login.css */
+
+/* .login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(to right, #1e3c72, #2a5298);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-page h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.login-page button {
+  background-color: #fff;
+  color: #1e3c72;
+  font-size: 1rem;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-page button:hover {
+  background-color: #f0f0f0;
+  color: #2a5298;
+  transform: scale(1.05);
+}
+
+@media screen and (max-width: 600px) {
+  .login-page h1 {
+    font-size: 1.5rem;
   }
+
+  .login-page button {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+} */

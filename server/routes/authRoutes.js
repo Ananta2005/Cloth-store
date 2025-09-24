@@ -1,13 +1,15 @@
 import { Router } from "express";
-import passport from "passport";
-import { register, login, logout, authStatus, setup2FA, verify2FA, reset2FA, VerifyEmail } from "../controllers/controller.js"
+// import passport from "passport";
+import { register, login, logout, authStatus, setup2FA, verify2FA, reset2FA, VerifyEmail, refreshAccessToken } from "../controllers/controller.js"
 import {jwtAuth} from "../controllers/controller.js"
+import { forgetPassword, resetPassword, updatePassword } from "../controllers/passwordController.js";
 
 import Stripe from "stripe"
 
 const router = Router();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
 
 // Registration Route
 router.post("/register", register)
@@ -16,8 +18,10 @@ router.post("/register", register)
 router.post("/verifyEmail", VerifyEmail)
 
 // Login Route
-router.post("/login", passport.authenticate("local"), login)
+router.post("/login", login)
 
+//Refresh token route
+router.post("/refresh-token", refreshAccessToken)
 
 // Auth status route
 router.get("/status", jwtAuth, authStatus)
@@ -35,7 +39,14 @@ router.post("/2fa/verify", jwtAuth, verify2FA)
 // Reset Route
 router.post("/2fa/reset", jwtAuth, reset2FA)
 
+//Forget Password
+router.post("/forget-password", forgetPassword)
 
+//Reset Password
+router.post("/reset-password/:token", resetPassword)
+
+//Update Password
+router.post("/update-password/:email", updatePassword)
 
 // Stripe Route
 router.post("/payment-checkOUT", async (req, res) => {

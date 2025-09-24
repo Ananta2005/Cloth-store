@@ -5,11 +5,19 @@ const initialState = {
 }
 
 const kidSlice = createSlice({
-    name: 'kids',
+    name: 'cloth',
     initialState,
     reducers: {
         setProducts: (state, action) => {
-            state.products = action.payload
+            if(Array.isArray(action.payload))
+            {
+               state.products = action.payload
+            }
+            else
+            {
+                console.warn("Invalid product payload", action.payload)
+                state.products = []
+            }
         },
 
         addProducts: (state, action) => {

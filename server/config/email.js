@@ -29,3 +29,21 @@ export const SendVerificationCode = async(email, verificationCode) => {
         console.log("Email error", error)
     }
 }
+
+
+export const SendResetPasswordLink = async(email, resetURL) =>{
+    try
+    {
+        console.log("Sending Reset Password Link")
+        const response = await transporter.sendMail({
+            to: email,
+            subject: "Password reset",
+            html: `<p>Click <a href="${resetURL}"> here </a> to reset passord.</p>`
+        })
+        console.log("Reset email sent successfully", response)
+    }
+    catch(error)
+    {
+        console.log("Reset Password Link ", error)
+    }
+}

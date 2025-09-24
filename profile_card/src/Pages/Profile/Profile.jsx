@@ -1,80 +1,72 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { logout, updateProfilePhoto } from '../../Slice/userSlice'
-import { useNavigate } from 'react-router-dom'
-import './Profile.css'
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, updateProfilePhoto } from '../../Slice/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-
-  const { user, profilePhoto } = useSelector((state) => state.user)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate()
+  const user = useSelector((state) => state.user.user);
+  const email = useSelector((state) => state.user.email);
+  const profilePhoto = useSelector((state) => state.user.profilePhoto);
 
-  const handleLogout = () =>{
-    dispatch(logout())
-    navigate('/')
-  }
+  const handleLogout = () => dispatch(logout());
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]
-    
-    if(file)
-    {
-      const fileURL = URL.createObjectURL(file)
-      dispatch(updateProfilePhoto(fileURL))
-      localStorage.setItem('profilePhoto', fileURL)
-    }
-  }
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => dispatch(updateProfilePhoto(reader.result));
+    reader.readAsDataURL(file);
+  };
 
-  useEffect(() =>{
-    if(!user){
-      console.log('User data not found.')
-    }
-  }, [user])
-
-
-  if (!user) {
-    return (
-      <div className="profile-page-container">
-        <div className="profile-card">
-          <h1 className="profile-title">Profile</h1>
-          <p className="profile-text">User Data Not Found. Please Login.</p>
-        </div>
-      </div>
-    );
-  }
-
-  
   return (
-    <div className='profile-page-container'>
-      <div className='profile-card'>
-        <h1 className='profile-title'>Profile</h1>
 
+      <div className='flex justify-center items-center min-h-screen bg-gray-100 p-4'>
+        <div className='bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center'>
 
-        <div className="profile-photo-container">
+          <h2 className='text-gray-800 font-extrabold text-3xl mb-6'>Profile</h2>
+
+          <div className='flex flex-col items-center mb-6'>
             {profilePhoto ? (
-              <img src={profilePhoto} alt="Profile" className='profile-photo' />
+              <img src={profilePhoto} alt='Profile' className='w-24 h-24 rounded-full object-cover border-2 border-gray-300' />
             ) : (
-              <div className='default-photo'> No Photo </div>
+              <div className='w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm'>No Image</div>
             )}
 
-            <input type='file' accept='image/*' onChange={handleFileChange} className='upload-button' />
+            <label className='mt-3 inline-block cursor-pointer bg-blue-500 text-white text-sm px-4 py-2 rounded hover:bg-blue-600 transition duration-300'>
+              Upload Photo
+              <input
+                type='file'
+                accept='image/*'
+                onChange={handleImageChange}
+                className='hidden'
+              />
+            </label>
+          </div>
+
+          <div className='text-left mb-4'>
+            <p className='text-gray-700 mb-2'>
+              <strong>Name: </strong> {user?.name || 'N/A'}
+            </p>
+            <p className='text-gray-700'>
+              <strong>Email: </strong> {user?.email || 'N/A'}
+            </p>
+          </div>
+
+          <div className='flex justify-start mt-4'>
+            <button onClick={handleLogout} className='bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition duration-300'>
+              Logout
+            </button>
+          </div>
+          <div className='flex justify-end mt-4'>
+            <button onClick={() => navigate('/update-password')} className='bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition duration-300'>
+              Update Password
+            </button>
+          </div>
         </div>
-
-
-        <p className='profile-text'>
-          <strong>Username: </strong> {user?.username}
-        </p>
-        <p className='profile-text'>
-          <strong>Email:</strong> {user?.email}
-        </p>
-
-        <button className='logout-button' onClick={handleLogout}>
-          Logout
-        </button>
       </div>
-    </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

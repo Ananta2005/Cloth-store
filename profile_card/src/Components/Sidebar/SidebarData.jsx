@@ -27,9 +27,9 @@ const SidebarData = [
             icon: <CheckroomIcon />,
             path: '/clothes',
             subItems: [
-                { title: 'Men', icon: <Man2Icon />, path: '/clothes/men' },
+                { title: 'Men', icon: <Man2Icon />, path: '/category/men' },
                 { title: 'Kids', icon: <FamilyRestroomIcon />, path: '/category/kids' },
-                { title: 'Women', icon: <WomanIcon /> , path: '/clothes/women' }
+                { title: 'Women', icon: <WomanIcon /> , path: '/category/women' }
                 // { title: 'Gen Z', path: '/clothes/genz' }
             ]
         },

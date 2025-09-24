@@ -6,6 +6,14 @@ import jwt from "jsonwebtoken"
 import { SendVerificationCode } from "../config/email.js"
 
 
+const generateAccessToken  = (user) => {
+   return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {expiresIn: "15m"})
+}
+
+const generateRefreshToken = (user) => {
+   return jwt.sign({id: user.id, email: user.email}, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "2d"})
+}
+
 
 export const register = async (req, res) => {
    try
@@ -38,7 +46,7 @@ export const register = async (req, res) => {
 
        console.log("Sending OTP to:", email)
        await SendVerificationCode(email, verificationCode)
-       res.status(201).json({ message: "User registered successfully" })
+       res.status(201).json({ message: "User registered successfully", email, name })
    }
    catch(error)
    {
@@ -75,28 +83,54 @@ export const VerifyEmail = async(req,res) => {
 export const login = async (req, res) => {
    try
    {
-      console.log("The authenticated user is : ", req.user)
+      const {email, password} = req.body
 
-      if(!req.user || !req.user.isVerified)
-      {
-         return res.status(401).json({ message:"Please verify your email first."})
-      }
+      const user = await User.findOne({ where: {email} })
 
-      if(req.user.isMfaActive)
+      if(!user || !(await bcrypt.compare(password, user.password)))
       {
-         const token = jwt.sign({ name: req.user.name }, process.env.JWT_SECRET, {expiresIn: "5m" })
-         return res.status(200).json({ message: "MFA required", isMfaActive: true, token })
+         return res.status(401).json({ message:"Invalid Credentials."})
       }
 
-      if(req.user)
+      if(!user.isVerified)
       {
-         const token = jwt.sign({ name: req.user.name }, process.env.JWT_SECRET, {expiresIn: "1h" })
-         return res.status(200).json({ message: "User logged in successfully", name: req.user.name, isMfaActive: req.user.isMfaActive, token })
+         return res.status(401).json({ message: "Please verify your email first." })
       }
-      else
+
+      if(user.isMfaActive)
       {
-         return res.status(401).json({ message: "Authentication failed" })
+         const shortToken = jwt.sign({ id: user.id, email: user.email, name: user.name }, process.env.JWT_SECRET, {expiresIn: "5m" })
+         return res.status(200).json({ message: "MFA required", isMfaActive: true, token: shortToken, email: user.email, name: user.name, profilePhoto: user.profilePhoto })
       }
+
+
+      const accessToken = generateAccessToken(user)
+      const refreshToken = generateRefreshToken(user)
+
+      user.refreshToken = refreshToken
+      await user.save()
+
+      res
+      .cookie("accessToken", accessToken, {
+         httpOnly: true,
+         sameSite: "Lax",
+         secure: process.env.NODE_ENV === "production",
+         maxAge: 15 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+         httpOnly: true,
+         sameSite: "Lax",
+         secure: process.env.NODE_ENV === "production",
+         maxAge: 2 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({
+         message: "Login successful",
+         isMfaActive: false,
+         email: user.email,
+         name: user.name,
+         profilePhoto: user.profilePhoto,
+   })
    }
    catch(error)
    {
@@ -108,11 +142,48 @@ export const login = async (req, res) => {
 
 
 
+
+export const refreshAccessToken = async(req, res) => {
+   const token = req.cookies.refreshToken
+   if(!token)
+      return res.status(401).json({message: "No refresh token provided" })
+
+   try
+   {
+      const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET)
+      const user = await User.findOne({ where: {id: decoded.id} })
+
+      if(!user || user.refreshToken !== token)
+      {
+         return res.status(403).json({message: "Invalid refresh token"})
+      }
+
+      const accessToken  = generateAccessToken(user)
+
+      res.cookie("accessToken", accessToken, {
+         httpOnly: true,
+         sameSite: "Lax",
+         secure: process.env.NODE_ENV === "production",
+         maxAge: 15 * 60 * 1000
+      })
+
+      res.status(200).json({ message: "Access token refreshed"})
+
+   }
+   catch(error)
+   {
+      console.error("Refresh error: ", error.message)
+      res.status(403).json({ message: "Invalid refresh token"})
+   }
+}
+
+
+
 export const authStatus = async (req, res) => {
    if(req.user)
    {
-      res.status(200).json({ message: "user logged in successfully", name: req.user.name, isMfaActive: req.user.isMfaActive, })
-   }
+        const { password, ...userData } = req.user.get({ plain: true });
+        res.status(200).json(userData);   }
    else
    {
       res.status(401).json({ message: "Unauthorized user" })
@@ -121,17 +192,17 @@ export const authStatus = async (req, res) => {
 
 
 export const logout = async (req, res) => {
-   if(!req.user)
-      return res.status(401).json({message: "Unauthorized user"})
-   req.logout((err) =>{
-      if(err)
-         return res.status(400).json({ message: "User not logged in" })
-      req.session.destroy(()=>{
-         res.clearCookie("connect.sid")
-         res.status(200).json({ message: "Logout successfull" })
-      })
-      
+   res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production",
    })
+   res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production",
+   })
+   return res.status(200).json({message: "Logout successful"})
 }
 
 
@@ -180,15 +251,34 @@ export const verify2FA = async (req, res) => {
       token: mfaToken,
       window: 1,
    })
-   if(verified)
+   if(!verified)
    {
-      const jwtToken = jwt.sign({ name: user.name }, process.env.JWT_SECRET, { expiresIn: "1hr"})
-      res.status(200).json({ message: "2FA successful", token: jwtToken})
+      return res.status(400).json({ message: "Invalid 2FA token" })
    }
-   else
-   {
-      res.status(400).json({ message: "Invalid 2FA token" })
-   }
+  
+   const accessToken = generateAccessToken(user)
+   const refreshToken = generateRefreshToken(user)
+
+   user.refreshToken = refreshToken
+   await user.save()
+
+   res
+      .cookie("accessToken", accessToken, {
+         httpOnly: true,
+         sameSite: "Lax",
+         secure: process.env.NODE_ENV === "production",
+         maxAge: 15 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+         httpOnly: true,
+         sameSite: "Lax",
+         secure: process.env.NODE_ENV === "production",
+         maxAge: 2 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({message: "2FA successful", isMfaActive: true,
+         isMfaActive: true, email: user.email, name: user.name, profilePhoto: user.profilePhoto,
+      })
 }
 
 
@@ -210,19 +300,32 @@ export const reset2FA = async (req, res) => {
 
 
 export const jwtAuth = async(req, res, next) => {
-   const token = req.headers.authorization?.split(" ")[1]
-   if(!token) return res.status(401).json({ message: "Token missing" })
+
+   let token
+
+   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    } 
+    // 2. If no header, check for the cookie.
+    else if (req.cookies.accessToken) {
+        token = req.cookies.accessToken;
+    }
+
+   if(!token) return res.status(401).json({ message: "Access Token missing" })
 
    try{
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      const user = await User.findOne({ where:{name: decoded.name}})
-
-      if(!user)  return res.status(401).json({message:"User not found"})
+      const user = await User.findOne({ where: {id: decoded.id} })
+      if(!user)
+      {
+         return res.status(401).json({message: "User not found in jwtAuth"})
+      }
       req.user = user
       next()
    }
    catch(err)
    {
-      return res.status(403).json({message: "Invalid token"})
+      console.log("JWT error: ", err.message)
+      return res.status(403).json({message: "Invalid token or expired token"})
    }
 }
