@@ -1,7 +1,9 @@
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import { deleteFromCloudinary } from "../utils/cloudinary.js"
 import fs from "fs"
 import Product from '../models/Product.js'
 import Rating from "../models/Rating.js"
+import { error } from "console"
 
 export const getProducts = async(req, res) => {
     try{
@@ -85,21 +87,29 @@ export const deleteProduct = async(req,res) => {
         const id = parseInt(req.params.id, 10)
         console.log("Delete request for ID:", id)
 
-        if (isNaN(id)) {
+        if (isNaN(id)) 
+        {
              return res.status(400).json({ error: 'Invalid product ID' })
-           }
+        }
+
+        const productToDelete = await Product.findByPk(id)
+
+        if(!productToDelete)
+        {
+            return res.status(404).json({ error: 'Product not found' })
+        }
+
+        if(productToDelete.imagePublicId)
+        {
+            const result = await deleteFromCloudinary(productToDelete.imagePublicId)
+            console.log("Cloudinary delete result: ", result)
+        }
 
         await Rating.destroy({where: {productId: id }})   
 
-        const deleted = await Product.destroy({ where: {id} })
-        if(deleted)
-        {
-            res.json({message: 'Product deleted Successfully !' })
-        }
-        else
-        {
-            res.status(404).json({ error: 'Product not found' })
-        }
+        await productToDelete.destroy();
+        res.json({message: "Product and associated image deleted from cloudinary"})
+        
     }
     catch(error)
     {

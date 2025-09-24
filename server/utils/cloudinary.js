@@ -38,4 +38,23 @@ const uploadOnCloudinary = async (localFilePath) => {
 }
 
 
+export const deleteFromCloudinary = async(imagePublicId) => {
+      try
+      {
+         if(!imagePublicId)
+         {
+            console.log("No public ID found in controller.js")
+            return null
+         }
+         const result = await cloudinary.uploader.destroy(imagePublicId)
+         return result
+      }
+      catch(error)
+      {
+         console.error("Error deleting from cloud: ", error)
+         return null
+      }
+}
+
+
 export {uploadOnCloudinary}

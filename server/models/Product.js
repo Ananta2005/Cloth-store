@@ -14,6 +14,7 @@ const Product = sequelize.define('Product', {
     category: { type: DataTypes.STRING, allowNull: false, defaultValue: 'kids', },
     name: { type: DataTypes.STRING, allowNull: false},
     image: {type: DataTypes.STRING, allowNull: false},
+    imagePublicId: {type: DataTypes.STRING, allowNull: false},
     productType: { type: DataTypes.STRING, defaultValue: 'kidswear' },
     price: { type: DataTypes.INTEGER, allowNull: false },
     // rating: { type: DataTypes.INTEGER, allowNull: false },
